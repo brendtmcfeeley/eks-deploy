@@ -4,6 +4,9 @@ on:
   push:
     branches: [ "main" ]
 
+env:
+  CURR_DATE==$(date +%s)
+
 jobs:
 
   build-and-tag:
@@ -18,8 +21,17 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
 
     - uses: actions/checkout@v4
-    - name: Build and push image
+    - name: Build and Push image to DockerHub
       run: |
-        currDate=$(date +%s)
-        docker build . --file Dockerfile --tag bentomcfeeley/alpine-linux:$currDate
-        docker push bentomcfeeley/alpine-linux:$currDate
+        docker build . --file Dockerfile --tag bentomcfeeley/alpine-python:$CURR_DATE
+        docker push bentomcfeeley/alpine-python:$CURR_DATE
+
+    - uses: actions/checkout@v4
+    - name: Vulnerability Summary
+      run: |
+        docker scout cves bentomcfeeley/alpine-python:$CURR_DATE
+
+    - uses: actions/checkout@v4
+    - name: Vulnerability Reccomendations
+      run: |
+          docker scout reccomendations bentomcfeeley/alpine-python:$CURR_DATE
