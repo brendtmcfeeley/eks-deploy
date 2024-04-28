@@ -10,6 +10,6 @@ patchesStrategicMerge:
   - patches/alpine-python.yaml
 
 images:
-- name: node-app
+- name: alpine-python
   newName: bentomcfeeley/alpine-python
   newTag: "stage"
