@@ -24,12 +24,12 @@ jobs:
         docker build . --file Dockerfile --tag bentomcfeeley/alpine-python:$CURR_DATE
         docker push bentomcfeeley/alpine-python:$CURR_DATE
 
-    - uses: actions/checkout@v4
+    - uses: docker/scout-action@v1
     - name: Vulnerability Summary
       run: |
         docker scout cves bentomcfeeley/alpine-python:$CURR_DATE
 
-    - uses: actions/checkout@v4
+    - uses: docker/scout-action@v1
     - name: Vulnerability Reccomendations
       run: |
           docker scout reccomendations bentomcfeeley/alpine-python:$CURR_DATE
