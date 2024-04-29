@@ -20,7 +20,7 @@ jobs:
     - uses: actions/checkout@v4
     - name: Build and Push image to DockerHub
       run: |
-        CURR_DATE==$(date +%s)
+        CURR_DATE=$(date +%s)
         docker build . --file Dockerfile --tag bentomcfeeley/alpine-python:$CURR_DATE
         docker push bentomcfeeley/alpine-python:$CURR_DATE
 
