@@ -1,201 +1,77 @@
-###### NEW VARS #######
-
-variable "image_id" {
-    description = "Default AMI ID for Amazon Linux on AWS Marketplace"
-    type        = string
-    default     = "ami-0663b059c6536cac8"
-}
-
-variable "instance_type" {
-    description = "Default EC2 size"
-    type        = string
-    default     = "t2.medium"
-}
-
-variable "aws_region" {
-  description = "AWS region to launch servers"
+variable "vpc_cidr" {
+  description = "VPC CIDR"
   type        = string
-  default     = "us-west-1"
+  default     = "10.0.0.0/16"
 }
-
-
-
-######## NEW VARS END ######
-
-
-#
-# SSH arguments
-#
-
-variable "private_key_path" {
-  description = "Local path to the SSH private key to authenticate with"
+variable "region" {
+  description = "AWS region"
   type        = string
+  default     = "us-west-2"
 }
-
-variable "public_key_path" {
-  description = "Local path to the SSH public key to authenticate with"
+variable "kubernetes_version" {
+  description = "Kubernetes version"
   type        = string
+  default     = "1.28"
 }
-
-#
-# kubeconfig arguments
-#
-
-variable "download_kubeconfig" {
-  description = "Optionally download and overwrite a local kubeconfig file"
-  type        = bool
+variable "addons" {
+  description = "Kubernetes addons"
+  type        = any
+  default = {
+    enable_aws_load_balancer_controller = true
+    enable_aws_ebs_csi_resources        = true # generate gp2 and gp3 storage classes for ebs-csi
+    enable_metrics_server               = true
+  }
 }
-
-variable "kubeconfig_path" {
-  description = "Local path to the kubeconfig file to overwrite"
+# Addons Git
+variable "gitops_addons_org" {
+  description = "Git repository org/user contains for addons"
   type        = string
+  default     = "https://github.com/gitops-bridge-dev"
 }
-
-#
-# k3d arguments
-#
-
-variable "k3d_cluster_name" {
-  description = "Desired cluster name for k3d to use"
+variable "gitops_addons_repo" {
+  description = "Git repository contains for addons"
   type        = string
+  default     = "gitops-bridge-argocd-control-plane-template"
 }
-
-variable "k3d_args" {
-  description = "Desired k3d args to pass in"
+variable "gitops_addons_revision" {
+  description = "Git repository revision/branch/ref for addons"
   type        = string
+  default     = "main"
 }
-
-variable "k3d_servers" {
-  description = "Desired number of k3d servers to spawn"
-  type        = number
-}
-
-variable "k3d_agents" {
-  description = "Desired number of k3d agents to spawn"
-  type        = number
-}
-
-variable "k3d_api_port" {
-  description = "Desired API server port for k3d to serve on"
-  type        = number
-}
-
-variable "k3d_upload_images" {
-  description = "Optionally load images from tar into k3d cluster"
-  type        = bool
-}
-
-variable "k3d_images_tarball" {
-  description = "Local path to the images tarball (tar.gz) to load into k3d"
+variable "gitops_addons_basepath" {
+  description = "Git repository base path for addons"
   type        = string
-}
-
-##
-# Variables that are not intended to be changed during developer usage.
-# If need be, these can be overridden for more specific technical usage.
-# These variables cannot be used in any ansible logic.
-# Default values must be specified here.
-##
-
-#
-# AWS arguments
-#
-
-variable "aws_region" {
-  description = "AWS region to launch servers"
-  default     = "us-west-1"
-  type        = string
-}
-
-variable "aws_instance_type" {
-  description = "Desired AWS instance type"
-  default     = "t2.xlarge"
-  type        = string
-}
-
-variable "aws_root_block_size" {
-  description = "Desired AWS instance root block size"
-  default     = 60
-  type        = number
-}
-
-variable "aws_tag_name" {
-  description = "Desired tag name to use for AWS resources"
-  default     = "k3d-dev-env"
-  type        = string
-}
-
-variable "aws_ingress_all" {
-  description = "Optionally allow ingress from anywhere"
-  default     = false
-  type        = bool
-}
-
-#
-# AMI arguments
-#
-
-variable "ami_owner_id" {
-  description = "Owner ID for use in the AMI filter"
-  # AMI ID Will change based on the packer image you build
-  default     = ["688168144979"]
-  type        = list(string)
-}
-
-variable "ami_filter_name" {
-  description = "Name to filter when picking an AMI"
-  default     = "k3d-dev-env"
-  type        = string
-}
-
-variable "ami_root_device_type" {
-  description = "AMI root device type to filter on"
-  default     = ["ebs"]
-  type        = list(string)
-}
-
-variable "ami_virtualization_type" {
-  description = "AMI virtualization type to filter on"
-  default     = ["hvm"]
-  type        = list(string)
-}
-
-variable "ami_instance_user" {
-  description = "Default AWS instance username"
-  default     = "ubuntu"
-  type        = string
-}
-
-#
-# ansible cli arguments
-#
-
-variable "ansible_playbook_path" {
-  description = "Default ansible playbook path"
-  default     = "ansible/k3d.yaml"
-  type        = string
-}
-
-variable "ansible_host_key_checking" {
-  description = "Default ansible host key checking value"
-  default     = false
-  type        = bool
-}
-
-variable "ansible_ssh_retries" {
-  description = "Default ansible SSH retries value"
-  default     = 10
-  type        = number
-}
-
-variable "ansible_pre_args" {
-  description = "Additional CLI arguments to pass before ansible-playbook command (Ex: ANSIBLE_SSH_RETIRES)"
   default     = ""
+}
+variable "gitops_addons_path" {
+  description = "Git repository path for addons"
   type        = string
+  default     = "bootstrap/control-plane/addons"
 }
 
-variable "ansible_post_args" {
-  description = "Additional CLI arguments to pass directly after ansible-playbook command (Ex: --extra-vars)"
-  default     = ""
+# Workloads Git
+variable "gitops_workload_org" {
+  description = "Git repository org/user contains for workload"
   type        = string
+  default     = "https://github.com/gitops-bridge-dev"
+}
+variable "gitops_workload_repo" {
+  description = "Git repository contains for workload"
+  type        = string
+  default     = "gitops-bridge"
+}
+variable "gitops_workload_revision" {
+  description = "Git repository revision/branch/ref for workload"
+  type        = string
+  default     = "main"
+}
+variable "gitops_workload_basepath" {
+  description = "Git repository base path for workload"
+  type        = string
+  default     = "argocd/iac/terraform/examples/eks/"
+}
+variable "gitops_workload_path" {
+  description = "Git repository path for workload"
+  type        = string
+  default     = "getting-started/k8s"
 }
